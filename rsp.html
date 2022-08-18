@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>가위바위보</title>
+    <style>
+        #computer {
+            width: 142px;
+            height: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <!--컴퓨터 손 이미지-->
+    <div id="computer"></div>
+    <div>
+        <!--버튼 3가지-->
+        <button id="scissors" class="btn">가위</button>
+        <button id="rock" class="btn">바위</button>
+        <button id="paper" class="btn">보</button>
+    </div>
+    <!--점수표-->
+    <div id="score">0</div>
+
+    <script>
+        const $computer = document.querySelector('#computer');
+        const $score = document.querySelector('#score');
+        const $scissors = document.querySelector('#scissors');
+        const $rock = document.querySelector('#rock');
+        const $paper = document.querySelector('#paper');
+        //상대 경로 .으로 시작 내 위치에 따라 경우 변경, /만 잇으면 절대경로 c드라이브를 기반으로 시작
+        const IMG_URL = './rsp.png';
+        $computer.style.background = `url(${IMG_URL}) 0 0`;
+        $computer.style.backgroundSize = `auto 200px`;
+
+        //객체를 그룹화 - 공통된 내용을 묶어 주는
+        const rspX = {
+            scissors: '0',
+            rock: '-220px',
+            paper: '-440px',
+        };
+        let computerChoice = 'scissors';
+        const changeComputerHand = () => {
+            //background 와 backgroundSize는 한 세트로 묶어주는 것이 좋다.
+            //가위면 그다음은 바위 바위면 그 다음인 보 ... 
+            if (computerChoice === 'scissors') { // 가위이면
+                computerChoice = 'rock';
+            } else if (computerChoice === 'rock') {  //바위
+                computerChoice = 'paper';
+            } else if (computerChoice === 'paper') { //보
+                computerChoice = 'scissors';
+            }
+            //rspX.computerChoice를 하면 안된다. 이건 문자열 = rspX['computerChoice']와 같음
+            //rspX[computerChoice]이건 배열의 값
+            //console.log(rspX.rock, rspX['rock']); 이 두개가 같은 값
+            $computer.style.background = `url(${IMG_URL}) ${rspX[computerChoice]} 0`;
+            $computer.style.backgroundSize = `auto 200px`;
+        }
+        let intervalid = setInterval(changeComputerHand, 50);
+
+        const scoreTable = {
+            rock : 0,
+            scissors: 1,
+            paper: -1,
+        };
+
+        let clickable = true;
+        let score = 0;
+
+        const clickButton = () => {
+            if (clickable) {
+                clearInterval(intervalid);
+                clickable = false;
+
+                const myChoice = event.target.textContent === '바위'
+                    ? 'rock'
+                    : event.target.textContent === '가위'
+                        ? 'scissors'
+                        : 'paper';
+                let message = '';
+                //숫자로 규칙을 만들어서 승패를 만들어줌 , 문자열로 중복이 안보이는 경우 숫자로 이를 치환해서 확인해보자
+                const myScore = scoreTable[myChoice];
+                const computerScore = scoreTable[computerChoice];
+                const diff = myScore - computerScore;
+                if(diff === 2 || diff === -1){ //코드 변환 팁 간단해짐 또는이 많이 나오는 : [2, -1].includes(diff); 배열로 만들어 t/f로 나타냄([2, -1].indexOf(diff) > -1)
+                    score += 1;
+                    message = '승리'
+                }else if(diff === -2 || diff === 1){
+                    score -= 1;
+                    message = '패배';
+                }else{
+                    message = '무승부'
+                }
+                $score.textContent = `${message} 총 : ${score}점`;
+                //점수 계산, 화면 표시
+                setTimeout(() => {
+                    clickable = true;
+                    intervalid = setInterval(changeComputerHand, 50);
+                }, 1000);
+            }
+        };
+
+        $rock.addEventListener('click', clickButton);
+        $scissors.addEventListener('click', clickButton);
+        $paper.addEventListener('click', clickButton);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Salsa&display=swap" rel="stylesheet">
+    <title>쿵쿵따</title>
+    <style>
+        *{
+            font-family: 'Salsa', cursive;
+          }
+    </style>
+</head>
+<body>
+    <div><span id="order">1</span>번째 참가자</div>
+    <div>제시어 : <span id="word"></span></div>
+    <input type="text">
+    <button>입력</button>
+
+    <script>
+
+        const number = parseInt(prompt("몇명이 참가하나요?"), 10);
+
+        const $button = document.querySelector('button');
+        const $input = document.querySelector('input');
+        const $word = document.querySelector('#word');
+        const $order = document.querySelector('#order');
+        let word; 
+        let newWord;
+
+        //글자 길이가 3인지 확인하는
+
+        const onClickButton = () =>{
+            if(!word || (word[word.length-1] === newWord[0] && word.length !== 3)){
+                word = newWord;
+                //이전에 내부에 보엿던 단어를 새로 입력되 단어로 바꿔주는
+                $word.textContent = word;
+                $input.value = '';
+
+                const order = parseInt($order.textContent);
+                $input.focus();
+
+                if(order + 1 > number){
+                    $order.textContent = 1;
+                }else{
+                    $order.textContent = order+1;
+                }
+                $input.value = '';
+                $input.focus();
+            }else{
+                alert('올바르지 않다.');
+                $input.value = '';
+                $input.focus();
+            }
+        };
+        const onInput = () => {
+            newWord = event.target.value;
+            console.log(newWord)
+        }
+
+        $button.addEventListener('click', onClickButton);
+        $input.addEventListener('input', onInput);
+
+    </script>
+</body>
+</html>

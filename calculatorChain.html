@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 200px auto;
+            width: 260px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        #result {
+            width: 180px;
+            height: 50px;
+            margin: 5px;
+            text-align: right;
+            border: solid green;
+        }
+
+        #operator {
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+            text-align: center;
+            border: solid green;
+        }
+
+        button {
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+            background-color: yellowgreen;
+            border: 2px green;
+        }
+    </style>
+</head>
+
+<body>
+    <!--readonly 글을 쓸수 없게 만드는 속성-->
+    <input readonly id="operator">
+    <input readonly type="text" id="result">
+    <div class="row">
+        <button id="num-7">7</button>
+        <button id="num-8">8</button>
+        <button id="num-9">9</button>
+        <button id="plus">+</button>
+    </div>
+    <div class="row">
+        <button id="num-4">4</button>
+        <button id="num-5">5</button>
+        <button id="num-6">6</button>
+        <button id="minus">-</button>
+    </div>
+    <div class="row">
+        <button id="num-1">1</button>
+        <button id="num-2">2</button>
+        <button id="num-3">3</button>
+        <button id="divide">/</button>
+    </div>
+    <div class="row">
+        <button id="clear">C</button>
+        <button id="num-0">0</button>
+        <button id="calculate">=</button>
+        <button id="multiply">x</button>
+    </div>
+    <script>
+        let numOne = '';
+        let operator = '';
+        let numTwo = '';
+        let preOperator = '';
+
+        const $operator = document.querySelector('#operator');
+        const $result = document.querySelector('#result');
+        //콜백 함수자리이어서 return 안에 넣어주어야 한다. return 
+        //이유는 리턴값을 받는 자리에 들어가는 것은 함수의 리턴값이지 함수가 아니다 
+        //return값을 넣어야 하는데 함수명()이거는 함수이지 함수의 리턴값이 아니다.
+        //addEventListener라는 함수의 매겨변수로 들어가는 것, 값으로 들어가야한다.
+        //return 값안에 함수를 넣어 그에 나온 값을 넣어주는 방식으로 이용
+
+        //함수의 return 값은 생략이 가능하다. 그래서 
+        // const onClickNumber = (number) => {
+        //     return () => {
+        //         if(operator){
+        //         numTwo += number;
+        //     }else{
+        //         numOne += number;
+        //     }
+        //     $result.value += number;
+        //     };
+        // }
+        //고차함수[high order function] () => () => {} 이런식으로도 넣어준다. 
+        const onClickNumber = (e) => {
+            if (!operator) { //비어있다. 
+                numOne += e.target.textContent;
+                $result.value += e.target.textContent;
+                console.log('확인1')
+                //여기서 함수를 종료시켜 버린다.
+                //return이 나오면 else가 필요가 없어진다.
+                //이렇게 중첩되는 것이 줄어드는 것이다. 
+                return;
+            }//비어있지 않다.
+            if (!numTwo) { //numTwo가 없는 상황에서는 결과 값을 지워라***
+                $result.value = '';
+            }
+            numTwo += e.target.textContent;
+            //결과값을 여기서 보여주면 =를 사용하지 않아도 될듯
+            $result.value += e.target.textContent;
+            console.log(numTwo, $result.value)
+        };
+        /*
+        위의 코드
+        if문을 줄이는 방법
+        1. if문 다음에 나오는 공통된 절차를 분기점 내부에 넣는다.
+        2. 분기점에서 짧은 절차부터 실행하게 if문을 작성한다.
+        3. 짧은 절차가 끝나면 return(함수 내부의 경우)이나 break(for문 내부의 경우)로 중단한다.
+        4. else를 제거한다.(이때 중첩 하나가 제거된다.)
+        5. 다음 중첩된 분기점이 나오면 1~4의 과정을 반복한다.
+        */
+        /*
+        const onClickNumber = (e) => {
+             if (operator) {
+                 if(!numTwo){ //numTwo가 없는 상황에서는 결과 값을 지워라***
+                     $result.value = '';
+                 }
+                 numTwo += e.target.textContent;
+             } else {
+                 numOne += e.target.textContent;
+             }
+             $result.value += e.target.textContent;
+         };
+        */
+       console.log(onClickNumber)
+       
+
+        document.querySelector('#num-0').addEventListener('click', onClickNumber);
+        document.querySelector('#num-1').addEventListener('click', onClickNumber);
+        document.querySelector('#num-2').addEventListener('click', onClickNumber);
+        document.querySelector('#num-3').addEventListener('click', onClickNumber);
+        document.querySelector('#num-4').addEventListener('click', onClickNumber);
+        document.querySelector('#num-5').addEventListener('click', onClickNumber);
+        document.querySelector('#num-6').addEventListener('click', onClickNumber);
+        document.querySelector('#num-7').addEventListener('click', onClickNumber);
+        document.querySelector('#num-8').addEventListener('click', onClickNumber);
+        document.querySelector('#num-9').addEventListener('click', onClickNumber);
+
+        const onClickOperator = (op) => () => {
+            //음수를 넣어주는 경우  - 여기서 reurn 값을 사용하는 이유는??
+            if(op === '-' && !numOne){
+                numOne += op;
+                $result.value = op;
+                return;
+            }
+            //연쇄적으로 계산을 하는 경우 
+            if (numTwo) {
+                switch (operator) {
+                    case '+':
+                        $result.value = parseInt(numOne) + parseInt(numTwo);
+                       // console.log($result.value)
+                        break;
+                    case '-':
+                        $result.value = parseInt(numOne) - parseInt(numTwo);
+                       // console.log($result.value)
+                        break;
+                    case '*':
+                        $result.value = parseInt(numOne) * parseInt(numTwo);
+                        break;
+                    case '/':
+                        $result.value = parseInt(numOne) / parseInt(numTwo);
+                        break;
+                    default:
+                        break;
+                }
+                //연속으로 계산하는 경우, numOne에 연속된 값을 넣은
+                numOne = $result.value;
+                console.log('확인3 : ', $result.value)
+                numTwo = '';
+            }          
+            if (numOne) {
+                operator = op;
+                $operator.value = op;
+            }else{
+                alert('숫자를 먼저 입력하게요!!');
+            
+                }
+        }
+        document.querySelector('#plus').addEventListener('click', onClickOperator('+'));
+        document.querySelector('#minus').addEventListener('click', onClickOperator('-'));
+        document.querySelector('#divide').addEventListener('click', onClickOperator('/'));
+        document.querySelector('#multiply').addEventListener('click', onClickOperator('*'));
+        document.querySelector('#calculate').addEventListener('click', () => {
+            //+는 문자열을 숫자로 바꾸지 못하지만 , -, / *는 문자열을 숫자로 바꿔준다.
+            if (numTwo) {
+                switch (operator) {
+                    case '+':
+                        $result.value = parseInt(numOne) + parseInt(numTwo);
+                        console.log($result.value)
+                        break;
+                    case '-':
+                        $result.value = parseInt(numOne) - parseInt(numTwo);
+                        console.log($result.value)
+                        break;
+                    case '*':
+                        $result.value = parseInt(numOne) * parseInt(numTwo);
+                        break;
+                    case '/':
+                        $result.value = parseInt(numOne) / parseInt(numTwo);
+                        break;
+                    default:
+                        break;
+                }
+                $operator.value = '';
+                numOne = $result.value;
+                console.log($result.value)
+                operator = '';
+                numTwo = '';
+            }else{
+                alert('숫자를 먼저 입력하세요!!!')
+            }
+        });
+        document.querySelector('#clear').addEventListener('click', () => {
+            //초기화는 초기의 상태로 되돌려 놓으면 된다.
+            //alt+방향키를 누르면 코드의 순서를 변경할 수 있다.
+            numOne = '';
+            operator = '';
+            numTwo = '';
+            $operator.value = '';
+            $result.value = '';
+        });        
+    </script>
+</body>
+
+</html>

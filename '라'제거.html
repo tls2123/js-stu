@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        //indexOf와 splice를 사용하여 '라'제거하기
+        let arr= ['가', '라', '다', '라', '마', '라'];
+
+        //글에 모두라는 말이 잇으면 반복문이 사용되는 경우가 많다
+        //조건문을 정하는 것 -> while(indexOf('라') > -1)
+        function sol(arr){
+
+            for(let i = 0; i <arr.lastIndexOf('라'); i++){
+                arr.splice(arr.indexOf('라'), 1);
+            }
+            return arr;
+        }
+        console.log(sol(arr))
+    </script>
+</body>
+</html>

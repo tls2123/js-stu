@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로또 추첨기</title>
+    <style>
+        .ball {
+            display: inline-block;
+            border: 1px solid black;
+            border-radius: 20px;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            font-size: 20px;
+            text-align: center;
+            margin-right: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="result">추첨한 결과는?</div>
+    <div id="bonus">보너스: </div>
+
+    <script>
+        //배열에 45개 수를 넣어준다.
+        //배열 45개를 만들고 fill - undefind로 45개 채워주고 인덱스에 +1해서 1부터 45까지의 수로 채워주는 방법
+        const candidate = Array(45).fill().map((v, i) => i + 1);
+
+        //45개를 랜덤으로 섞고 7개 뽑은 방법 
+        const shuffle = [];
+        while (candidate.length > 0) {
+            const random = Math.floor(Math.random() * candidate.length); //무작위로 인덱스 뽑기
+            //splice의 리턴값이 spliceArray에 들어감 spliceArray는 배열에 들어가진다. 
+            const spliceArray = candidate.splice(random, 1); // 뽑은 값은 배열에 들어 있음
+            const value = spliceArray[0]; //배열에 들어있는 값을 꺼내어
+            shuffle.push(value); //shuffle 배열에 넣기
+        }
+        console.log(shuffle);
+
+        //작은 수부터 보이기 위해 정렬
+        //45개를 랜덤하게 만들고 6개를 뽑는다. 그리고 정렬
+        const winBalls = shuffle.slice(0, 6).sort((a, b) => a - b);
+        const bonus = shuffle[6]; //보너스 볼
+        console.log(winBalls, bonus);
+
+        //setTimeout 함수 사용 (내용, 밀리언초);
+        const $result = document.querySelector('#result');
+        const $bonus = document.querySelector('#bonus');
+        //중복되서 함수로 만들어줌, 중복되는 부분만 매개변수로 넣어줌
+        const showBall = (number, $target) => {
+            const $ball = document.createElement('div');
+            $ball.className = 'ball';
+            $ball.textContent = number;
+            $target.appendChild($ball);
+        }
+        //이걸 7번 반복해야 화면에 출력이 완료된다 그래서 함수로 만들어줌
+        /*setTimeout(() => {
+            const $ball = document.createElement('div');
+            $ball.className = 'ball';
+            $ball.textContent = winBalls[0];
+            $result.appendChild($ball);
+        }, 1000);
+        */
+
+        /*
+        //중복을 줄려서 , 다시 중복을 제거
+        setTimeout(() => {
+            showBall(winBalls[0], $result);
+        }, 1000);
+        setTimeout(() => {
+            showBall(bonus, $bonus);
+        }, 7000)
+        */
+
+        //중복같은 것을 제거하고 수정하는 과정을 리팩토링이라고 부른다. 
+        //이 경우 수정후 동일하게 돌아가지 않을 수도 있으니 이를 유의하고 진행해야한다.
+
+        //반복문으로 마지막으로 중복을 제거 해준다.
+        //보너스 볼은 입력값이 다르고 중복값으로 넣기 어려움
+        for (let i = 0; i < winBalls.length; i++) {
+            setTimeout(() => {
+                showBall(winBalls[i], $result);
+            }, (i+1) * 1000);
+        }
+        /*
+        var를 사용하면 같은값이 나온다 이유는 var는 for문은 보호하지않고 바로 실행하기 때문이다. 
+        이경우 함수를 통해서 이를 보호해주고 만들어주는데
+        let이 아닌 var로 만들어주려면
+        => 매개변수로 j를 넣은 함수를 구현
+         for (var i = 0; i < winBalls.length; i++) {
+                function(j) {
+                    setTimeout(() => {
+                    showBall(winBalls[j], $result);
+                }, (i+1) * 1000);
+            })(i); 
+        }
+        함수와 함수 안에 잇는 변수 만들어주어 실행 j를 사용해서
+        복잡한 스코프문제 
+        클로저 - 함수와 함수 밖에 잇는 변수를 클로저라 부르고
+        클로저와 베리어블(비동기)이 만나면 문제를 발생시킬수 잇다. 
+        for문은 실행이 완료되고 setTimeout는 1초후에 실행되는 그래서 값이 i = 6일때의 값만 나오는 
+        스코프 - 함수와 함수 안에 있는 변수를 스코프라고 부른다.
+        */
+        setTimeout(() => {
+            showBall(bonus, $bonus);
+        }, 7000);
+    </script>
+</body>
+
+</html>

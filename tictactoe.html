@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>틱택토</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        td {
+            border: 1px solid black;
+            width: 40px;
+            height: 40px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        /*
+        요즘에 나오는 코드 , document 는 객체이다. 그래서  {} 안에 / createElement 메서드
+        const {body} = document;(구조분해할당) === (const body = document.body)
+        구조분해 할당 할 경우 안돌아가는 코드도 존재함 this배울때 확인
+        */
+        const { body } = document;
+        const $result = document.createElement('div');
+        let turn = '0';
+        const rows = [];
+
+        //target는 td 임
+        //td는 cell를 가지고 잇고 row는 tr에서 가지고 잇다.
+        const checkWinner = (target) => {
+            // let rowIndex;
+            // let cellIndex;
+            // rows.forEach((row, ri) => {
+            //     row.forEach((cell, ci) => {
+            //         if(cell === target){
+            //             rowIndex = ri;
+            //             cellIndex = ci;
+            //         }
+            //     });
+            // });
+            //위에 forEach문과 같은 과정을 두줄의 코드를 가지고 해결이 가능하다. 
+            const rowIndex = target.parentNode.rowIndex;
+            const cellIndex = target.cellIndex;
+            console.log(rowIndex, cellIndex)
+
+            //세칸이 다 채워졌나?
+            let hasWinner = false;
+            //가로줄 검사
+            if(
+                rows[rowIndex][0].textContent === turn &&
+                rows[rowIndex][1].textContent === turn &&
+                rows[rowIndex][2].textContent === turn
+            ){
+                hasWinner = true;
+            }
+            //세로줄 검사
+            if(
+                rows[0][cellIndex].textContent === turn &&
+                rows[1][cellIndex].textContent === turn &&
+                rows[2][cellIndex].textContent === turn
+            ){
+                hasWinner = true;
+            }
+            //대각선 검사
+            if(
+                rows[0][0].textContent === turn &&
+                rows[1][1].textContent === turn &&
+                rows[2][2].textContent === turn
+            ){
+                hasWinner = true;
+            }
+            if(
+                rows[0][2].textContent === turn &&
+                rows[1][1].textContent === turn &&
+                rows[2][0].textContent === turn
+            ){
+                hasWinner = true;
+            }
+            return hasWinner;
+        };
+
+        const callback = (e) => {
+            //칸에 글자가 잇나?
+            //remove 이벤트를 쓰는 것보다 그냥 return를 해주는 것이 더 좋다.
+            if (e.target.textContent) return;
+            console.log('빈칸')
+            e.target.textContent = turn;
+            //승부확인
+            if(checkWinner(e.target)){
+                $result.textContent = `${turn}님이 승리!!!`
+                $table.removeEventListener('click', callback)
+                return;
+            }
+            //무승부, 칸이 다 차잇으면 
+            //기본이 무승부 한칸이라고 비어 잇으면 다시 고고
+            //첫번째 칸이 비어있으면 end를 해주어야 하는데 이 코드는 다 돈다. 
+            //return를 사용해도 안 멈춘다. / 함수는 리턴 언디파인드가 들어가잇는 것이다. 
+            //그래서 사용하는 것이 every - 모두통과하해야 true, - 일차원 배열에만 사용된다. 
+            //이를 사용하기 위해서 arr.flat()를 사용해서 이차원 배열을 일차로 만들어준다.
+            //every의 반대 some
+            let draw = rows.flat().every((cell) => cell.textContent);
+            if(draw){
+                $result.textContent = `무승부`;
+                return;
+            }
+            turn = turn === 'X' ? '0' : 'X';
+
+        }
+
+        const $table = document.createElement('table');
+        for (let i = 0; i < 3; i++) {
+            const $tr = document.createElement('tr');
+            let cells = [];
+            for (let j = 0; j < 3; j++) {
+                const $td = document.createElement('td');
+                cells.push($td);
+                $tr.append($td);
+            }
+            rows.push(cells);
+            $table.append($tr);
+        }
+        $table.addEventListener('click' , callback);
+        body.append($table);
+        body.append($result);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>반응속도</title>
+    <style>
+        #screen{
+            width: 300px;
+            height: 200px;
+            text-align: center;
+            user-select: none;
+        }
+        #screen.waiting{
+            background-color: blue;
+        }
+        #screen.ready {
+            background-color: red;
+            color: white;
+        }
+        #screen.now {
+            background-color: green;
+        }
+    </style>
+</head>
+<body>
+    <div id="screen" class="waiting">클릭해서 시작하세요</div>
+    <div id="result"></div>
+    <div id="records"></div>
+
+    <script>
+        const $screen = document.querySelector('#screen');
+        const $result = document.querySelector('#result');
+        const $records = document.querySelector('#records')
+
+        let startTime;
+        let endTime;
+        const records = [];
+        let timeoutId;
+        let recordsRank = [];
+        $screen.addEventListener('click', (e) => {
+            if(e.target.classList.contains('waiting')){ //파랑
+                $screen.classList.remove('waiting');
+                $screen.classList.add('ready');
+                $screen.textContent = "초록색이 되면 클릭하세요"
+                
+                timeoutId = setTimeout(function() {
+                    startTime = new Date();
+                    $screen.classList.remove('ready');
+                    $screen.classList.add('now');
+                    $screen.textContent = "클릭하세요"
+                    //첫 시간 재기
+                }, Math.floor(Math.random() * 1000) + 2000); //2000 ~ 3000사이의 수
+            }else if(e.target.classList.contains('ready')){ //빨강
+                //이 경우 다시 돌아가 실행이 되는 버그가 발생함으로 clearTimeout(timeoutId);해주어야 하고 
+                //회원가입이 이루어졌는데 계속 클릭을해서 회원가입이 많이 되는 경우가 발생한다 이 경우도 이를 통해서 에러를 잡는다
+                clearTimeout(timeoutId);
+                $screen.classList.remove('ready');
+                $screen.classList.add('waiting');
+                $screen.textContent = "너무 성급해요!!!!!!!"
+            }else if(e.target.classList.contains('now')){ //초록
+                //끝 시간 재기
+                endTime = new Date();
+                //$result.textContent = `${endTime - startTime}ms`;
+
+                const current = endTime - startTime;
+                records.push(current);
+                const average = records.reduce((a, c) => a+c) / records.length;
+                $result.textContent = `현재 ${current}ms, 평균 ${average}ms`;
+                startTime = null;
+                endTime = null;
+                //current 배열인 records를 정렬한다. , 5개를 잘라서 보여준다. 
+                records.sort();
+                console.log(records)
+                recordsRank = records.slice(0, 5);
+                $records.textContent = `상위 : ${recordsRank}`
+
+                /*
+                강의안
+                const topFive = records.sort((p, c) => p-c).slice(0, 5);
+                topFive.forEach((top, index) => {
+                    $result.append(
+                        document.createElement('br');
+                        `${index + 1위} : ${top}ms`;
+                    );
+                });
+                */
+ 
+                $screen.classList.remove('now');
+                $screen.classList.add('waiting');
+                $screen.textContent = "클릭해서 시작하세요"
+                //시간 차이 저장하기
+            }
+        })
+    </script>
+</body>
+</html>
